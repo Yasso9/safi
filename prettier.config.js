@@ -11,9 +11,7 @@ const config = {
     jsxSingleQuote: true,
     singleAttributePerLine: true,
 
-    plugins: [
-        'prettier-plugin-tailwindcss',
-    ],
+    plugins: ['prettier-plugin-tailwindcss'],
 
     // tailwindcss plugin options
     tailwindStylesheet: './app/assets/css/main.css',
