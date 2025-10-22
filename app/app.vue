@@ -8,9 +8,9 @@
                 class="flex min-h-screen items-center justify-center px-6 py-12"
             >
                 <div class="w-full max-w-[70ch]">
-                    <FocusedEditor
+                    <PlainEditor
                         v-model="text"
-                        @input="handleInput"
+                        @update:model-value="handleInput"
                         placeholder="Start typing..."
                     />
                 </div>
