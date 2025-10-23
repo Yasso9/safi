@@ -1,7 +1,8 @@
 <script setup lang="ts">
+const model = defineModel<string>({ default: '' })
+
 const props = withDefaults(
     defineProps<{
-        modelValue: string
         placeholder?: string
     }>(),
     {
@@ -9,38 +10,46 @@ const props = withDefaults(
     },
 )
 
-const emit = defineEmits<{
-    'update:modelValue': [value: string]
-}>()
-
 const editorRef = useTemplateRef('editorRef')
 
-const isEmpty = computed(() => !props.modelValue)
+const isEmpty = computed(() => !model.value)
 
 function handleInput() {
     if (!editorRef.value) return
-    emit('update:modelValue', editorRef.value.textContent || '')
+    model.value = editorRef.value.textContent
 }
 
 function handlePaste(e: ClipboardEvent) {
     e.preventDefault()
     const text = e.clipboardData?.getData('text/plain') || ''
-    document.execCommand('insertText', false, text)
+
+    const selection = globalThis.getSelection()
+    if (!selection || selection.rangeCount === 0) return
+
+    const range = selection.getRangeAt(0)
+    range.deleteContents()
+
+    const textNode = document.createTextNode(text)
+    range.insertNode(textNode)
+
+    range.setStartAfter(textNode)
+    range.collapse(true)
+    selection.removeAllRanges()
+    selection.addRange(range)
+
+    handleInput()
 }
 
-watch(
-    () => props.modelValue,
-    (newValue) => {
-        if (!editorRef.value) return
-        if (editorRef.value.textContent !== newValue) {
-            editorRef.value.textContent = newValue
-        }
-    },
-)
+watch(model, (newValue) => {
+    if (!editorRef.value) return
+    if (editorRef.value.textContent !== newValue) {
+        editorRef.value.textContent = newValue
+    }
+})
 
 onMounted(() => {
     if (editorRef.value) {
-        editorRef.value.textContent = props.modelValue
+        editorRef.value.textContent = model.value
     }
 })
 </script>
@@ -59,7 +68,7 @@ onMounted(() => {
             v-if="isEmpty"
             class="pointer-events-none absolute top-8 left-8 font-mono text-lg text-[#a3a3a3] dark:text-[#525252]"
         >
-            {{ placeholder }}
+            {{ props.placeholder }}
         </div>
     </div>
 </template>
