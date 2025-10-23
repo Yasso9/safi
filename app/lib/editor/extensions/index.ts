@@ -5,14 +5,9 @@ import { liveMarkers } from './live-markers'
 import { markdownExtension } from './markdown'
 import { createPlaceholder } from './placeholder'
 import { noSpell } from './spellcheck'
-import { useSuggestion } from './suggestion/index'
 
 export function useExtensions(placeholder?: string) {
-    const { extension: suggestionExtension } = useSuggestion()
-
     const extensions = [
-        suggestionExtension,
-
         baseExtensions,
         keymapsExtension,
         markdownExtension,

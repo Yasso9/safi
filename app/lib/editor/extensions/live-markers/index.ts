@@ -7,5 +7,5 @@ export const liveMarkers = [
     createMarkerHider(marker.emphasis),
     createMarkerHider(marker.strikethrough),
     createMarkerHider(marker.code),
-    createMarkerHider(marker.horizontalRule),
+    // createMarkerHider(marker.horizontalRule),
 ]

@@ -4,7 +4,7 @@ import { syntaxTree } from '@codemirror/language'
 import type { MarkerConfig } from './marker'
 
 export type FilterMode = 'line' | 'selection' | 'paired'
-export type MarkerContext = {
+export interface MarkerContext {
     view: EditorView
     markerFrom: number
     markerTo: number
@@ -17,7 +17,7 @@ export function getFilter(
     context: MarkerContext,
     markerConfig: MarkerConfig,
 ): boolean {
-    const filterMode = markerConfig.filterMode
+    const {filterMode} = markerConfig
     switch (filterMode) {
         case 'line':
             return lineFilter(context)
@@ -64,9 +64,9 @@ function findPair(
 ): { start: number; end: number } | undefined {
     const { view, markerFrom } = context
     const tree = syntaxTree(view.state)
-    const doc = view.state.doc
+    const {doc} = view.state
 
-    let result: { start: number; end: number } | undefined = undefined
+    let result: { start: number; end: number } | undefined
 
     tree.iterate({
         from: markerFrom,

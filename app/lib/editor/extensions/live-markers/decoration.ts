@@ -4,7 +4,7 @@ import { syntaxTree } from '@codemirror/language'
 import { Decoration } from '@codemirror/view'
 
 import type { MarkerConfig } from './marker'
-import { logger } from '~~/shared/utils/logger'
+import { logger } from '~/utils/logger'
 
 export type DecorationPostProcessor = (
     view: EditorView,
@@ -27,7 +27,7 @@ function buildDecorations(
 ): DecorationSet {
     const decorations: Range<Decoration>[] = []
     const tree = syntaxTree(view.state)
-    const doc = view.state.doc
+    const { doc } = view.state
 
     tree.iterate({
         enter: (node) => {
@@ -36,8 +36,8 @@ function buildDecorations(
             //     doc.sliceString(node.from, node.to),
             // )
             if (node.name === markerConfig.markName) {
-                const from = node.from
-                let to = node.to
+                const { from } = node
+                let { to } = node
                 const text = doc.sliceString(from, to)
                 logger.verbose(
                     `Found node: ${node.name} from ${from} to ${to} with text: "${text}"`,

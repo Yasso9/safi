@@ -4,11 +4,11 @@ import { Decoration, EditorView, ViewPlugin } from '@codemirror/view'
 import type { DecorationPostProcessor } from './decoration'
 import type { MarkerContext } from './filter'
 import type { MarkerConfig } from './marker'
-import { logger } from '~~/shared/utils/logger'
+import { logger } from '~/utils/logger'
 import { initDecorator } from './decoration'
 import { getFilter } from './filter'
 
-export type HideMarkerConfig = {
+export interface HideMarkerConfig {
     decorationPostProcessor?: DecorationPostProcessor
 }
 

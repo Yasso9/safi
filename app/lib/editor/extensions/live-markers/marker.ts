@@ -2,8 +2,8 @@ import type { WidgetType } from '@codemirror/view'
 
 import type { DecorationPostProcessor } from './decoration'
 import type { FilterMode } from './filter'
-import Separator from '~/components/ui/separator/separator.vue'
-import { QuoteWidget, TextWidget, VueWidget } from './widget'
+// import Separator from '~/components/ui/separator/separator.vue'
+import { QuoteWidget, TextWidget } from './widget'
 
 interface BaseMarkerConfig {
     markName: string
@@ -25,7 +25,7 @@ interface SimpleMarkerConfig extends BaseMarkerConfig {
 export type MarkerConfig = PairedMarkerConfig | SimpleMarkerConfig
 
 export const marker = {
-    heading: <MarkerConfig>{
+    heading: {
         markName: 'HeaderMark',
         nodeNames: ['ATXHeading'],
         filterMode: 'line',
@@ -37,14 +37,14 @@ export const marker = {
             }
             return to
         },
-    },
-    quote: <MarkerConfig>{
+    } as MarkerConfig,
+    quote: {
         markName: 'QuoteMark',
         nodeNames: ['BlockQuote'],
         filterMode: 'line',
         widget: new QuoteWidget(),
-    },
-    emphasis: <MarkerConfig>{
+    } as MarkerConfig,
+    emphasis: {
         markName: 'EmphasisMark',
         nodeNames: ['StrongEmphasis', 'Emphasis'],
         filterMode: 'paired',
@@ -55,29 +55,21 @@ export const marker = {
             }
             return 1
         },
-    },
-    strikethrough: <MarkerConfig>{
+    } as MarkerConfig,
+    strikethrough: {
         markName: 'StrikethroughMark',
         nodeNames: ['Strikethrough'],
         filterMode: 'paired',
         widget: new TextWidget(''),
         getMarkerLength: () => 2,
-    },
-    code: <MarkerConfig>{
+    } as MarkerConfig,
+    code: {
         markName: 'CodeMark',
         nodeNames: ['InlineCode', 'FencedCode'],
         filterMode: 'paired',
         widget: new TextWidget(''),
         getMarkerLength: (nodeName, _text) =>
+            // eslint-disable-next-line no-magic-numbers, ts/no-magic-numbers
             nodeName === 'FencedCode' ? 3 : 1,
-    },
-    horizontalRule: <MarkerConfig>{
-        markName: 'HorizontalRule',
-        nodeNames: ['HorizontalRule'],
-        filterMode: 'line',
-        widget: new VueWidget(Separator, {
-            orientation: 'horizontal',
-            class: 'inline-flex',
-        }),
-    },
+    } as MarkerConfig,
 } as const

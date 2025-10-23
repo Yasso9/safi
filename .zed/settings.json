@@ -4,5 +4,14 @@
         "CSS": {
             "language_servers": ["tailwindcss-language-server"]
         }
+    },
+    "lsp": {
+        "css": {
+            "settings": {
+                "css": { "lint": { "unknownAtRules": "ignore" } },
+                "less": { "lint": { "unknownAtRules": "ignore" } },
+                "scss": { "lint": { "unknownAtRules": "ignore" } }
+            }
+        }
     }
 }
