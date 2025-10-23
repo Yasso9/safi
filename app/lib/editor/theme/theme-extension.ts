@@ -1,9 +1,9 @@
 import { syntaxHighlighting } from '@codemirror/language'
 import { clouds } from 'thememirror'
 
-import { boldHeadingsStyle } from './bold-headings'
+import { markdownStyles } from './bold-headings'
 
-export const themeExtension = [clouds, syntaxHighlighting(boldHeadingsStyle)]
+export const themeExtension = [clouds, syntaxHighlighting(markdownStyles)]
 
 // Previous custom theming (commented out for future reference):
 // import { syntaxHighlighting } from '@codemirror/language'

@@ -1,7 +1,7 @@
 import { HighlightStyle } from '@codemirror/language'
 import { tags as t } from '@lezer/highlight'
 
-export const boldHeadingsStyle = HighlightStyle.define([
+export const markdownStyles = HighlightStyle.define([
     {
         tag: t.heading1,
         fontWeight: 'bold',
@@ -25,5 +25,17 @@ export const boldHeadingsStyle = HighlightStyle.define([
     {
         tag: t.heading6,
         fontWeight: 'bold',
+    },
+    {
+        tag: t.strong,
+        fontWeight: 'bold',
+    },
+    {
+        tag: t.emphasis,
+        fontStyle: 'italic',
+    },
+    {
+        tag: t.strikethrough,
+        textDecoration: 'line-through',
     },
 ])
