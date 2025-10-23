@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { debounceFilter, useLocalStorage } from '@vueuse/core'
-import MarkdownEditor from '~/components/markdown-editor.vue'
+import Editor from '~/components/editor.vue'
 
 const DEBOUNCE_DELAY = 300
 
@@ -12,7 +12,7 @@ const text = useLocalStorage('pure-editor:markdown-text', '', {
 <template>
     <div class="flex min-h-screen items-start justify-center">
         <div class="w-full max-w-[70ch]">
-            <MarkdownEditor
+            <Editor
                 v-model:content="text"
                 placeholder="Start typing your markdown..."
             />

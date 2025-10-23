@@ -1,74 +1,62 @@
 <script setup lang="ts">
-const model = defineModel<string>({ default: '' })
+import type { HTMLAttributes } from 'vue'
 
-const props = withDefaults(
-    defineProps<{
-        placeholder?: string
-    }>(),
-    {
-        placeholder: 'Start typing...',
-    },
-)
+import { useCodeMirror } from '~/composables/use-code-mirror'
 
-const editorRef = useTemplateRef('editorRef')
-
-const isEmpty = computed(() => !model.value)
-
-function handleInput() {
-    if (!editorRef.value) return
-    model.value = editorRef.value.textContent
+interface EditorProps {
+    placeholder?: string
+    class?: HTMLAttributes['class']
 }
 
-function handlePaste(e: ClipboardEvent) {
-    e.preventDefault()
-    const text = e.clipboardData?.getData('text/plain') || ''
-
-    const selection = globalThis.getSelection()
-    if (!selection || selection.rangeCount === 0) return
-
-    const range = selection.getRangeAt(0)
-    range.deleteContents()
-
-    const textNode = document.createTextNode(text)
-    range.insertNode(textNode)
-
-    range.setStartAfter(textNode)
-    range.collapse(true)
-    selection.removeAllRanges()
-    selection.addRange(range)
-
-    handleInput()
-}
-
-watch(model, (newValue) => {
-    if (!editorRef.value) return
-    if (editorRef.value.textContent !== newValue) {
-        editorRef.value.textContent = newValue
-    }
+const content = defineModel<string>('content', { required: true })
+const props = withDefaults(defineProps<EditorProps>(), {
+    placeholder: 'Start typing your note here...',
 })
 
-onMounted(() => {
-    if (editorRef.value) {
-        editorRef.value.textContent = model.value
-    }
+const editorEl = useTemplateRef('editorEl')
+
+const {
+    isReady,
+    isFocused,
+    focus,
+    blur,
+    getSelection,
+    setSelection,
+    updateContent,
+} = useCodeMirror(content, editorEl, {
+    placeholder: props.placeholder,
+})
+
+defineExpose({
+    isReady,
+    isFocused,
+    focus,
+    blur,
+    getSelection,
+    setSelection,
+    updateContent,
 })
 </script>
 
 <template>
-    <div class="relative w-full">
-        <div
-            ref="editorRef"
-            contenteditable="plaintext-only"
-            class="min-h-[70vh] w-full border-0 bg-transparent p-8 font-mono text-lg leading-relaxed text-[#0a0a0a] outline-none focus:outline-none dark:text-[#fafafa]"
-            spellcheck="false"
-            @input="handleInput"
-            @paste="handlePaste"
-        ></div>
-        <div
-            v-if="isEmpty"
-            class="pointer-events-none absolute top-8 left-8 font-mono text-lg text-[#a3a3a3] dark:text-[#525252]"
-        >
-            {{ props.placeholder }}
-        </div>
-    </div>
+    <div
+        ref="editorEl"
+        :class="props.class"
+    />
 </template>
+
+<style>
+@reference '~/assets/css/main.css';
+
+.cm-editor {
+    height: 100%;
+    overflow: hidden;
+
+    &.cm-focused {
+        @apply outline-none;
+    }
+    .cm-content {
+        @apply mx-auto min-h-full max-w-full p-5 text-lg md:max-w-2xl;
+    }
+}
+</style>
