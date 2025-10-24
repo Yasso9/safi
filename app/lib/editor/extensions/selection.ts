@@ -8,7 +8,7 @@ interface SelectionRect {
     width: string
 }
 
-const minimalSelectionPlugin = ViewPlugin.fromClass(
+const selectionPlugin = ViewPlugin.fromClass(
     class {
         selectionLayer: HTMLElement
         measureReq: {
@@ -156,7 +156,7 @@ const minimalSelectionPlugin = ViewPlugin.fromClass(
     },
 )
 
-const minimalSelectionTheme = EditorView.baseTheme({
+const selectionTheme = EditorView.baseTheme({
     '.cm-minimal-selectionLayer': {
         position: 'absolute',
         top: '0',
@@ -167,10 +167,11 @@ const minimalSelectionTheme = EditorView.baseTheme({
     '.cm-minimal-selection': {
         position: 'absolute',
         backgroundColor: 'rgba(0, 0, 0, 0.08)',
+        minHeight: '100%',
     },
     '.cm-content ::selection': {
         backgroundColor: 'transparent !important',
     },
 })
 
-export const minimalSelection = [minimalSelectionPlugin, minimalSelectionTheme]
+export const selection = [selectionPlugin, selectionTheme]
