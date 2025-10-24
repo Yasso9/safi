@@ -55,6 +55,9 @@ const selectionPlugin = ViewPlugin.fromClass(
             const { state, scrollDOM } = view
 
             const containerRect = scrollDOM.getBoundingClientRect()
+            const lineHeight = parseFloat(
+                getComputedStyle(view.contentDOM).lineHeight,
+            )
 
             for (const range of state.selection.ranges) {
                 if (range.empty) continue
@@ -79,7 +82,7 @@ const selectionPlugin = ViewPlugin.fromClass(
                         if (coords) {
                             rects.push({
                                 top: coords.top - containerRect.top,
-                                height: coords.bottom - coords.top,
+                                height: lineHeight,
                                 left: coords.left - containerRect.left,
                                 width: '1ch',
                             })
@@ -120,9 +123,7 @@ const selectionPlugin = ViewPlugin.fromClass(
                                     rects.push({
                                         top:
                                             startCoords.top - containerRect.top,
-                                        height:
-                                            startCoords.bottom
-                                            - startCoords.top,
+                                        height: lineHeight,
                                         left:
                                             startCoords.left
                                             - containerRect.left,
