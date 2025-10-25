@@ -1,20 +1,20 @@
-export interface FileReadResponse {
+export interface FileResponse {
+    type: 'file'
     content: string
     path: string
 }
 
-export interface FileWriteRequest {
+export interface FolderResponse {
+    type: 'folder'
+    files: FileMetadata[]
+    directories: FolderMetadata[]
+    currentPath: string
+}
+
+export interface FileRequest {
+    type: 'file'
     content: string
-}
-
-export interface FileWriteResponse {
-    success: boolean
     path: string
-}
-
-export interface ErrorResponse {
-    error: string
-    statusCode: number
 }
 
 export interface FileMetadata {
@@ -24,13 +24,7 @@ export interface FileMetadata {
     modifiedAt: Date
 }
 
-export interface DirectoryMetadata {
+export interface FolderMetadata {
     name: string
     path: string
-}
-
-export interface DirectoryListResponse {
-    files: FileMetadata[]
-    directories: DirectoryMetadata[]
-    currentPath: string
 }

@@ -12,7 +12,7 @@ export default defineNuxtConfig({
     },
 
     runtimeConfig: {
-        workspacePath: '',
+        workspacePath: process.env.WORKSPACE_PATH,
     },
 
     // Disable automatic imports
@@ -26,6 +26,11 @@ export default defineNuxtConfig({
 
     typescript: {
         typeCheck: true,
+        tsConfig: {
+            compilerOptions: {
+                types: ['bun'],
+            },
+        },
     },
     css: ['./app/assets/css/main.css'],
     vite: {

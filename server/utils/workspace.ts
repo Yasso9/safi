@@ -1,37 +1,18 @@
 import { constants } from 'node:fs'
 import { access, mkdir, readdir, stat } from 'node:fs/promises'
 import path from 'node:path'
-import type {
-    DirectoryMetadata,
-    FileMetadata,
-} from '~~/shared/types/api'
+import type { FileMetadata, FolderMetadata } from '~~/shared/types/api'
 
 export function getWorkspacePath(): string {
     const { workspacePath } = useRuntimeConfig()
-
     if (!workspacePath) {
-        throw new Error(
-            'WORKSPACE_PATH environment variable is not set. Please configure it to point to your markdown files directory.',
-        )
+        throw createError({
+            statusCode: 500,
+            statusMessage:
+                'WORKSPACE_PATH environment variable is not set. Please configure it to point to your markdown files directory.',
+        })
     }
-
     return path.resolve(workspacePath)
-}
-
-export function resolveFilePath(relativePath: string): string {
-    const workspacePath = getWorkspacePath()
-    const normalizedPath = relativePath.replace(/^\/+/u, '')
-    const absolutePath = path.resolve(path.join(workspacePath, normalizedPath))
-
-    if (!isWithinWorkspace(absolutePath)) {
-        throw new Error('Path is outside workspace boundary')
-    }
-
-    if (!isMarkdownFile(absolutePath)) {
-        throw new Error('Only .md files are allowed')
-    }
-
-    return absolutePath
 }
 
 export function isWithinWorkspace(absolutePath: string): boolean {
@@ -58,13 +39,20 @@ export async function ensureDirectoryExists(filePath: string): Promise<void> {
     }
 }
 
-export function resolveDirectoryPath(relativePath: string): string {
+export function resolvePath(relativePath: string): string {
     const workspacePath = getWorkspacePath()
     const normalizedPath = relativePath.replace(/^\/+/u, '')
-    const absolutePath = path.resolve(path.join(workspacePath, normalizedPath))
+    return path.resolve(path.join(workspacePath, normalizedPath))
+}
 
-    if (!isWithinWorkspace(absolutePath)) {
-        throw new Error('Path is outside workspace boundary')
+export function resolveFilePath(relativePath: string): string {
+    const absolutePath = resolvePath(relativePath)
+
+    if (!isMarkdownFile(absolutePath)) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'Only .md files are allowed',
+        })
     }
 
     return absolutePath
@@ -91,13 +79,19 @@ export async function getFileMetadata(
 
 export async function listDirectory(
     relativePath: string,
-): Promise<{ files: FileMetadata[]; directories: DirectoryMetadata[] }> {
-    const absolutePath = resolveDirectoryPath(relativePath)
+): Promise<{ files: FileMetadata[]; directories: FolderMetadata[] }> {
+    const absolutePath = resolvePath(relativePath)
     const workspacePath = getWorkspacePath()
+
+    try {
+        await access(absolutePath, constants.R_OK)
+    } catch {
+        await mkdir(absolutePath, { recursive: true })
+    }
 
     const entries = await readdir(absolutePath, { withFileTypes: true })
 
-    const directories: DirectoryMetadata[] = []
+    const directories: FolderMetadata[] = []
     const filePromises: Promise<FileMetadata>[] = []
 
     for (const entry of entries) {
@@ -106,7 +100,10 @@ export async function listDirectory(
         }
 
         const entryAbsolutePath = path.join(absolutePath, entry.name)
-        const entryRelativePath = path.relative(workspacePath, entryAbsolutePath)
+        const entryRelativePath = path.relative(
+            workspacePath,
+            entryAbsolutePath,
+        )
 
         if (entry.isDirectory()) {
             directories.push({

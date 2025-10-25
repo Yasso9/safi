@@ -3,9 +3,9 @@ import {
     ensureDirectoryExists,
     resolveFilePath,
 } from '~~/server/utils/workspace'
-import type { FileWriteRequest, FileWriteResponse } from '~~/shared/types/api'
+import type { FileRequest } from '~~/shared/types/api'
 
-export default defineEventHandler(async (event): Promise<FileWriteResponse> => {
+export default defineEventHandler(async (event) => {
     try {
         const path = getRouterParam(event, 'path')
 
@@ -16,7 +16,7 @@ export default defineEventHandler(async (event): Promise<FileWriteResponse> => {
             })
         }
 
-        const body = await readBody<FileWriteRequest>(event)
+        const body = await readBody<FileRequest>(event)
 
         if (
             !body
