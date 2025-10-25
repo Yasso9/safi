@@ -1,4 +1,4 @@
-import { EditorState } from '@codemirror/state'
+import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 
 import { useExtensions } from '~/lib/editor/extensions'
@@ -26,6 +26,7 @@ export function useCodeMirror(
     const isFocused = ref(false)
 
     let editorView: EditorView | undefined
+    const extensionsCompartment = new Compartment()
 
     onMounted(() => {
         createEditor()
@@ -43,6 +44,15 @@ export function useCodeMirror(
 
     const extensions = useExtensions(extensionsOptions)
 
+    watch(extensions, (newExtensions) => {
+        if (editorView) {
+            editorView.dispatch({
+                effects: extensionsCompartment.reconfigure(newExtensions),
+            })
+            logger.trace('Extensions reconfigured')
+        }
+    })
+
     function createEditor() {
         if (!editorElement.value) {
             logger.warn('Editor element is not available')
@@ -52,7 +62,7 @@ export function useCodeMirror(
         const state = EditorState.create({
             doc: content.value,
             extensions: [
-                ...extensions,
+                extensionsCompartment.of(extensions.value),
                 EditorView.updateListener.of((update) => {
                     if (update.docChanged) {
                         handleEditorChange(update.state.doc.toString())

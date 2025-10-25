@@ -1,4 +1,3 @@
-import { themeExtension } from '~/lib/editor/theme/theme-extension'
 import { baseExtensions } from './base-extensions'
 import { headingOutdentExtension } from './heading-outdent'
 import { keymapsExtension } from './keymap'
@@ -7,6 +6,8 @@ import { markdownExtension } from './markdown'
 import { createPlaceholder } from './placeholder'
 import { focusModeExtension } from './focus-mode'
 import { noSpell } from './spellcheck'
+import { usePreferredDark } from '@vueuse/core'
+import { darkTheme, lightTheme } from '~/lib/editor/theme/theme-extension'
 
 export interface UseExtensionsOptions {
     /** @default undefined */
@@ -28,7 +29,6 @@ export function useExtensions(options: UseExtensionsOptions = {}) {
         baseExtensions,
         keymapsExtension,
         markdownExtension,
-        themeExtension,
 
         // Extra
         noSpell,
@@ -47,5 +47,10 @@ export function useExtensions(options: UseExtensionsOptions = {}) {
         extensions.push(createPlaceholder(placeholder))
     }
 
-    return extensions
+    const isDark = usePreferredDark()
+
+    return computed(() => [
+        ...extensions,
+        ...(isDark.value ? darkTheme : lightTheme),
+    ])
 }

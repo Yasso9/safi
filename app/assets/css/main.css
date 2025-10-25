@@ -8,3 +8,9 @@
 @theme {
     --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
+
+@layer base {
+    body {
+        @apply bg-white dark:bg-zinc-950;
+    }
+}
