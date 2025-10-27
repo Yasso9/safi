@@ -2,8 +2,6 @@
 import type { HTMLAttributes } from 'vue'
 
 import { useCodeMirror } from '~/composables/use-code-mirror'
-import { useKeyboardShortcut } from '~/composables/use-keyboard-shortcut'
-import ExplorerDialog from '~/components/explorer-dialog.vue'
 
 interface EditorProps {
     placeholder?: string
@@ -29,18 +27,6 @@ const {
     placeholder: props.placeholder,
 })
 
-const isExplorerOpen = ref(false)
-useKeyboardShortcut(
-    {
-        key: 'k',
-        ctrl: !navigator.platform.toLowerCase().includes('mac'),
-        meta: navigator.platform.toLowerCase().includes('mac'),
-    },
-    () => {
-        isExplorerOpen.value = true
-    },
-)
-
 defineExpose({
     isReady,
     isFocused,
@@ -57,7 +43,6 @@ defineExpose({
         ref="editorEl"
         :class="props.class"
     />
-    <ExplorerDialog v-model:open="isExplorerOpen" />
 </template>
 
 <style>

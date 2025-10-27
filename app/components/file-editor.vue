@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { watchDebounced } from '@vueuse/core'
 import Editor from '~/components/editor.vue'
+import ExplorerDialog from '~/components/explorer-dialog.vue'
+import { useKeyboardShortcut } from '~/composables/use-keyboard-shortcut'
 import type { FileResponse } from '~~/shared/types/api'
 
 const props = defineProps<{
@@ -25,6 +27,18 @@ watchDebounced(
     },
     { debounce: DEBOUNCE_DELAY },
 )
+
+const isExplorerOpen = ref(false)
+useKeyboardShortcut(
+    {
+        key: 'k',
+        ctrl: !navigator.platform.toLowerCase().includes('mac'),
+        meta: navigator.platform.toLowerCase().includes('mac'),
+    },
+    () => {
+        isExplorerOpen.value = true
+    },
+)
 </script>
 
 <template>
@@ -36,4 +50,5 @@ watchDebounced(
             />
         </div>
     </div>
+    <ExplorerDialog v-model:open="isExplorerOpen" />
 </template>
