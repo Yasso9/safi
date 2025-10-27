@@ -22,7 +22,7 @@ function handleFileClick(path: string) {
 <template>
     <Explorer
         v-if="entry?.type === 'folder'"
-        :path="filePath"
+        :folder="entry"
         @folder-click="handleFolderClick"
         @file-click="handleFileClick"
     />

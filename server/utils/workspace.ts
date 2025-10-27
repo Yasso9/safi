@@ -62,18 +62,15 @@ export function isHiddenFile(filename: string): boolean {
     return filename.startsWith('.')
 }
 
-export async function getFileMetadata(
+export function getFileMetadata(
     absolutePath: string,
     relativePath: string,
-): Promise<FileMetadata> {
-    const stats = await stat(absolutePath)
+): FileMetadata {
     const filename = path.basename(absolutePath)
 
     return {
         name: filename,
         path: relativePath,
-        createdAt: stats.birthtime,
-        modifiedAt: stats.mtime,
     }
 }
 
@@ -92,7 +89,7 @@ export async function listDirectory(
     const entries = await readdir(absolutePath, { withFileTypes: true })
 
     const directories: FolderMetadata[] = []
-    const filePromises: Promise<FileMetadata>[] = []
+    const files: FileMetadata[] = []
 
     for (const entry of entries) {
         if (isHiddenFile(entry.name)) {
@@ -111,13 +108,9 @@ export async function listDirectory(
                 path: entryRelativePath,
             })
         } else if (entry.isFile() && isMarkdownFile(entry.name)) {
-            filePromises.push(
-                getFileMetadata(entryAbsolutePath, entryRelativePath),
-            )
+            files.push(getFileMetadata(entryAbsolutePath, entryRelativePath))
         }
     }
-
-    const files = await Promise.all(filePromises)
 
     return { files, directories }
 }

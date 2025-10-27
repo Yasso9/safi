@@ -2,68 +2,49 @@
 import type { FolderResponse } from '~~/shared/types/api'
 
 interface FileExplorerProps {
-    path?: string
+    folder: FolderResponse
 }
 
-const props = withDefaults(defineProps<FileExplorerProps>(), {
-    path: '',
-})
-
+const props = defineProps<FileExplorerProps>()
 const emit = defineEmits<{
     folderClick: [path: string]
     fileClick: [path: string]
 }>()
 
-const { data, error, status } = await useFetch<FolderResponse>(
-    () => `/api/folders/${props.path}`,
-    {
-        key: `folders-${props.path}`,
-        watch: [() => props.path],
-    },
-)
-
 const sortedDirectories = computed(() =>
-    (data.value?.directories ?? []).toSorted((a, b) =>
-        a.name.localeCompare(b.name),
-    ),
+    props.folder.directories.toSorted((a, b) => a.name.localeCompare(b.name)),
 )
 
 const sortedFiles = computed(() =>
-    (data.value?.files ?? []).toSorted((a, b) => a.name.localeCompare(b.name)),
+    props.folder.files.toSorted((a, b) => a.name.localeCompare(b.name)),
 )
 
-const isLoading = computed(() => status.value === 'pending')
+const parentPath = computed(() => {
+    const segments = props.folder.currentPath.split('/').filter(Boolean)
+    if (segments.length === 0) return
+    segments.pop()
+    return segments.length === 0 ? '' : `/${segments.join('/')}`
+})
+
+const hasParent = computed(() => parentPath.value !== undefined)
 </script>
 
 <template>
     <div class="flex min-h-screen flex-col font-mono">
-        <div
-            v-if="isLoading"
-            class="flex items-center justify-center py-12 text-zinc-400 dark:text-zinc-600"
-        >
-            Loading...
-        </div>
+        <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
+            <button
+                v-if="hasParent"
+                type="button"
+                class="flex w-full items-center gap-3 px-5 py-3 text-left transition-colors hover:bg-zinc-50 active:bg-zinc-100 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+                @click="
+                    parentPath !== undefined && emit('folderClick', parentPath)
+                "
+            >
+                <span class="flex-1 text-zinc-900 dark:text-zinc-100">
+                    go back
+                </span>
+            </button>
 
-        <div
-            v-else-if="error"
-            class="flex items-center justify-center py-12 text-red-500 dark:text-red-400"
-        >
-            Failed to load directory
-        </div>
-
-        <div
-            v-else-if="
-                sortedDirectories.length === 0 && sortedFiles.length === 0
-            "
-            class="flex items-center justify-center py-12 text-zinc-400 dark:text-zinc-600"
-        >
-            Empty directory
-        </div>
-
-        <div
-            v-else
-            class="divide-y divide-zinc-200 dark:divide-zinc-800"
-        >
             <button
                 v-for="directory in sortedDirectories"
                 :key="directory.path"
