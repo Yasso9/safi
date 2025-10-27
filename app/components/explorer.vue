@@ -30,7 +30,7 @@ const hasParent = computed(() => parentPath.value !== undefined)
 </script>
 
 <template>
-    <div class="flex min-h-screen flex-col font-mono">
+    <div class="flex flex-col font-mono">
         <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
             <button
                 v-if="hasParent"

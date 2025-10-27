@@ -40,7 +40,7 @@ function handleClose() {
 <template>
     <dialog
         ref="dialogEl"
-        class="max-h-[50vh] w-full max-w-2xl rounded-lg border-0 bg-white p-0 shadow-2xl backdrop:bg-black/50 backdrop:backdrop-blur-sm dark:bg-zinc-900"
+        class="fixed inset-0 m-auto h-fit max-h-[80vh] w-full max-w-2xl rounded-lg border-0 shadow-2xl backdrop:bg-black/50 backdrop:backdrop-blur-sm dark:bg-zinc-900"
         closedby="any"
         @close="handleClose"
     >
