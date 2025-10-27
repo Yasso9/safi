@@ -1,5 +1,5 @@
 import { constants } from 'node:fs'
-import { access, mkdir, readdir, stat } from 'node:fs/promises'
+import { access, mkdir, readdir } from 'node:fs/promises'
 import path from 'node:path'
 import type { FileMetadata, FolderMetadata } from '~~/shared/types/api'
 
