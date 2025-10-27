@@ -15,7 +15,7 @@ watchEffect(() => {
     content.value = props.file.content
 })
 
-const DEBOUNCE_DELAY = 150
+const DEBOUNCE_DELAY = 300
 
 watchDebounced(
     content,
@@ -39,6 +39,13 @@ useKeyboardShortcut(
         isExplorerOpen.value = true
     },
 )
+
+const currentDirectory = computed(() => {
+    const segments = props.file.path.split('/').filter(Boolean)
+    if (segments.length === 0) return ''
+    segments.pop()
+    return segments.length === 0 ? '' : `/${segments.join('/')}`
+})
 </script>
 
 <template>
@@ -50,5 +57,8 @@ useKeyboardShortcut(
             />
         </div>
     </div>
-    <ExplorerDialog v-model:open="isExplorerOpen" />
+    <ExplorerDialog
+        v-model:open="isExplorerOpen"
+        :initial-path="currentDirectory"
+    />
 </template>

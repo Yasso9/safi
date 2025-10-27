@@ -2,10 +2,20 @@
 import Explorer from '~/components/explorer.vue'
 import type { FolderResponse } from '~~/shared/types/api'
 
+interface ExplorerDialogProps {
+    initialPath?: string
+}
+
 const isOpen = defineModel<boolean>('open', { default: false })
+
+const props = withDefaults(defineProps<ExplorerDialogProps>(), {
+    // root path
+    initialPath: '',
+})
+
 const dialogEl = useTemplateRef('dialogEl')
 
-const currentPath = ref('')
+const currentPath = ref(props.initialPath)
 const { data: folder, refresh } = await useFetch<FolderResponse>(
     () => `/api/folders/${currentPath.value}`,
     {
@@ -24,7 +34,7 @@ watch(isOpen, async (open) => {
 
 function handleFolderClick(path: string) {
     currentPath.value = path
-    refresh()
+    // refresh()
 }
 
 function handleFileClick(path: string) {
