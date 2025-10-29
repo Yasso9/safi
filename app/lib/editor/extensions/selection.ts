@@ -157,7 +157,7 @@ const selectionPlugin = ViewPlugin.fromClass(
     },
 )
 
-const selectionTheme = EditorView.baseTheme({
+const baseSelectionTheme = EditorView.baseTheme({
     '.cm-minimal-selectionLayer': {
         position: 'absolute',
         top: '0',
@@ -167,7 +167,6 @@ const selectionTheme = EditorView.baseTheme({
     },
     '.cm-minimal-selection': {
         position: 'absolute',
-        backgroundColor: 'rgba(0, 0, 0, 0.08)',
         minHeight: '100%',
     },
     '.cm-content ::selection': {
@@ -175,4 +174,31 @@ const selectionTheme = EditorView.baseTheme({
     },
 })
 
-export const selection = [selectionPlugin, selectionTheme]
+const lightSelectionTheme = EditorView.theme(
+    {
+        '.cm-minimal-selection': {
+            backgroundColor: 'rgba(0, 0, 0, 0.08)',
+        },
+    },
+    { dark: false },
+)
+
+const darkSelectionTheme = EditorView.theme(
+    {
+        '.cm-minimal-selection': {
+            backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        },
+    },
+    { dark: true },
+)
+
+export const lightSelection = [
+    selectionPlugin,
+    baseSelectionTheme,
+    lightSelectionTheme,
+]
+export const darkSelection = [
+    selectionPlugin,
+    baseSelectionTheme,
+    darkSelectionTheme,
+]

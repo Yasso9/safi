@@ -6,6 +6,7 @@ import { markdownExtension } from './markdown'
 import { createPlaceholder } from './placeholder'
 import { focusModeExtension } from './focus-mode'
 import { noSpell } from './spellcheck'
+import { darkSelection, lightSelection } from './selection'
 import { usePreferredDark } from '@vueuse/core'
 import { darkTheme, lightTheme } from '~/lib/editor/theme/theme-extension'
 
@@ -52,5 +53,6 @@ export function useExtensions(options: UseExtensionsOptions = {}) {
     return computed(() => [
         ...extensions,
         ...(isDark.value ? darkTheme : lightTheme),
+        ...(isDark.value ? darkSelection : lightSelection),
     ])
 }
