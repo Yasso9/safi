@@ -24,7 +24,7 @@ watchDebounced(
     content,
     async (newContent) => {
         const { path } = props.file
-        await $fetch(`/api/files/${path}`, {
+        await $fetch(`/api/files/${path as ':path'}`, {
             method: 'PUT',
             body: { content: newContent },
         })
