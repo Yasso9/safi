@@ -11,8 +11,11 @@ export default defineNuxtConfig({
         },
     },
 
+    // runtimeConfig: {
+    //     workspacePath: process.env.NUXT_WORKSPACE_PATH,
+    // },
     runtimeConfig: {
-        workspacePath: process.env.WORKSPACE_PATH,
+        workspacePath: '',
     },
 
     // Disable automatic imports
@@ -24,14 +27,15 @@ export default defineNuxtConfig({
     //     autoImports: false,
     // },
 
-    typescript: {
-        typeCheck: true,
-        tsConfig: {
-            compilerOptions: {
-                types: ['bun'],
-            },
-        },
-    },
+    // typescript: {
+    // have problems with bun in docker
+    // typeCheck: true,
+    // tsConfig: {
+    //     compilerOptions: {
+    //         types: ['bun'],
+    //     },
+    // },
+    // },
     css: ['./app/assets/css/main.css'],
     vite: {
         plugins: [tailwindcss()],

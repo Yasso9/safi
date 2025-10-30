@@ -1,0 +1,22 @@
+services:
+    pure-editor:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: pure-editor:latest
+        container_name: pure-editor
+        restart: unless-stopped
+        ports:
+            - '3000:3000'
+        environment:
+            # Workspace path inside container
+            - NUXT_WORKSPACE_PATH=/app/workspace
+            # Production mode
+            - NODE_ENV=production
+            # Server configuration
+            - HOST=0.0.0.0
+            - PORT=3000
+        volumes:
+            # Mount local directory to persist markdown files
+            # Change './workspace' to your desired local path
+            - ./workspace:/app/workspace

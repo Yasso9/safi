@@ -9,7 +9,7 @@ export function getWorkspacePath(): string {
         throw createError({
             statusCode: 500,
             statusMessage:
-                'WORKSPACE_PATH environment variable is not set. Please configure it to point to your markdown files directory.',
+                'NUXT_WORKSPACE_PATH environment variable is not set. Please configure it to point to your markdown files directory.',
         })
     }
     return path.resolve(workspacePath)
