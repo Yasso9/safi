@@ -1,5 +1,6 @@
 import type { FileResponse } from '~~/shared/types/api'
-import { readFile } from 'node:fs/promises'
+import { access, readFile } from 'node:fs/promises'
+import { constants } from 'node:fs'
 import { listDirectory, resolveFilePath } from '~~/server/utils/workspace'
 
 export default defineEventHandler(
@@ -9,11 +10,17 @@ export default defineEventHandler(
 
         if (pathParam) {
             const absolutePath = resolveFilePath(pathParam)
-            const content = await readFile(absolutePath, 'utf8')
-            return {
-                type: 'file',
-                content,
-                path: pathParam,
+
+            try {
+                await access(absolutePath, constants.R_OK)
+                const content = await readFile(absolutePath, 'utf8')
+                return {
+                    type: 'file',
+                    content,
+                    path: pathParam,
+                }
+            } catch {
+                return undefined
             }
         }
 
@@ -32,12 +39,17 @@ export default defineEventHandler(
         }
 
         const absolutePath = resolveFilePath(firstFile.path)
-        const content = await readFile(absolutePath, 'utf8')
 
-        return {
-            type: 'file',
-            content,
-            path: firstFile.path,
+        try {
+            await access(absolutePath, constants.R_OK)
+            const content = await readFile(absolutePath, 'utf8')
+            return {
+                type: 'file',
+                content,
+                path: firstFile.path,
+            }
+        } catch {
+            return undefined
         }
     },
 )
