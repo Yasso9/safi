@@ -23,11 +23,12 @@ const { saveLastEditedFile } = useLastEditedFile()
 watchDebounced(
     content,
     async (newContent) => {
-        await $fetch(`/api/files/${props.file.path}`, {
+        const { path } = props.file
+        await $fetch(`/api/files/${path}`, {
             method: 'PUT',
             body: { content: newContent },
         })
-        saveLastEditedFile(props.file.path)
+        saveLastEditedFile(path)
     },
     { debounce: DEBOUNCE_DELAY },
 )

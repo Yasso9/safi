@@ -27,13 +27,17 @@ const shortcuts = computed<Shortcut[]>(() => [
         keys: isMac.value ? ['⌘', 'K'] : ['Ctrl', 'K'],
         description: 'Open file explorer',
     },
+    {
+        keys: ['F1'],
+        description: 'Show keyboard shortcuts',
+    },
 ])
 </script>
 
 <template>
     <dialog
         ref="dialogEl"
-        class="fixed inset-0 m-auto h-fit w-full max-w-md rounded-lg border-0 p-0 shadow-2xl backdrop:bg-black/50 backdrop:backdrop-blur-sm dark:bg-zinc-900"
+        class="fixed inset-0 m-auto h-fit w-full max-w-md rounded-lg border-0 p-0 shadow-2xl outline-none backdrop:bg-black/50 backdrop:backdrop-blur-sm dark:bg-zinc-900"
         closedby="any"
         @close="handleClose"
     >
