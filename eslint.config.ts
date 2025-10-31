@@ -7,7 +7,7 @@ export default ilyasso({
             'error',
             {
                 case: 'kebabCase',
-                ignore: ['README.md'],
+                ignore: ['README.md', 'CLAUDE.md', 'AGENTS.md', 'GEMINI.md'],
             },
         ],
     },

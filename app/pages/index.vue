@@ -1,19 +1,13 @@
 <script setup lang="ts">
 // import LastEditedFileCard from '~/components/last-edited-file-card.vue'
 // import ManagedExplorer from '~/components/managed-explorer.vue'
-import ShortcutsDialog from '~/components/shortcuts-dialog.vue'
-import { useShortcut } from '~/composables/use-shortcuts'
 
 // const currentFolderPath = ref('')
 
 const { data: workspace } = await useFetch('/api/workspace')
 const workspacePath = computed(() => workspace.value?.path ?? '')
 
-const isShortcutsOpen = ref(false)
-
-useShortcut('show-shortcuts', () => {
-    isShortcutsOpen.value = !isShortcutsOpen.value
-})
+const isShortcutsOpen = useState('isShortcutsOpen', () => false)
 </script>
 
 <template>
@@ -61,6 +55,4 @@ useShortcut('show-shortcuts', () => {
             </button>
         </main>
     </div>
-
-    <ShortcutsDialog v-model:open="isShortcutsOpen" />
 </template>
