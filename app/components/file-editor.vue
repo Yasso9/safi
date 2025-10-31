@@ -40,8 +40,8 @@ const isMac = navigator.userAgent.toLowerCase().includes('mac')
 useKeyboardShortcut(
     {
         key: 'k',
-        ctrl: !isMac.value,
-        meta: isMac.value,
+        ctrl: !isMac,
+        meta: isMac,
     },
     () => {
         isExplorerOpen.value = true

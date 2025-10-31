@@ -26,7 +26,7 @@ const isMac = navigator.userAgent.toLowerCase().includes('mac')
 
 const shortcuts = computed<Shortcut[]>(() => [
     {
-        keys: isMac.value ? ['⌘', 'K'] : ['Ctrl', 'K'],
+        keys: isMac ? ['⌘', 'K'] : ['Ctrl', 'K'],
         description: 'Open file explorer',
     },
     {

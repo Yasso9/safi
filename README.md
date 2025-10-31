@@ -1,16 +1,14 @@
 # Safi
 
-A minimalist, distraction-free text editor for markdown files. Built with Nuxt 4, Vue 3, and CodeMirror 6, Safi provides a clean, mobile-friendly interface focused on your content.
+A minimalist, distraction-free text editor for markdown files. Safi provides a clean, mobile-friendly interface focused on your content.
 
 ## Features
 
 - Minimalist, distraction-free interface
-- Mobile-first design with touch-friendly interactions
-- File-based storage with markdown support
-- Syntax highlighting and markdown editing features
-- Keyboard shortcuts for efficient workflow
-- Dark mode support
-- Direct file system access for portability
+- Markdown file-based storage in the server
+- Shortcuts for efficient workflow
+- Focus mode for deep work
+- Light and Dark mode support
 
 ## Quick Start with Docker
 
