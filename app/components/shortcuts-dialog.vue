@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import KeyboardKey from './keyboard-key.vue'
+
 const isOpen = defineModel<boolean>('open', { default: false })
 
 const dialogEl = useTemplateRef('dialogEl')
@@ -61,15 +63,7 @@ const shortcuts = computed<Shortcut[]>(() => [
                     <span class="text-sm text-zinc-600 dark:text-zinc-400">
                         {{ shortcut.description }}
                     </span>
-                    <div class="flex items-center gap-1">
-                        <kbd
-                            v-for="(key, keyIndex) in shortcut.keys"
-                            :key="keyIndex"
-                            class="rounded border border-zinc-300 bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
-                        >
-                            {{ key }}
-                        </kbd>
-                    </div>
+                    <KeyboardKey :keys="shortcut.keys" />
                 </div>
             </div>
         </div>
