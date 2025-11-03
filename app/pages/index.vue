@@ -83,7 +83,7 @@ useShortcut('open-explorer', () => (isExplorerOpen.value = true))
 
             <LastEditedFileCard /> -->
 
-        <main class="flex w-full max-w-md flex-col items-center gap-4">
+        <main class="flex w-full max-w-md flex-col items-center">
             <HomeButton @click="isExplorerOpen = true">
                 Open Explorer
                 <KeyboardKey
