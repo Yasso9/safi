@@ -2,7 +2,8 @@
 import HomeButton from '~/components/home-button.vue'
 import InputValidation from '~/components/input-validation.vue'
 import KeyboardKey from '~/components/keyboard-key.vue'
-import { useShortcut } from '~/composables/use-shortcuts'
+import { shortcuts, useShortcut } from '~/composables/use-shortcuts'
+import { getKeyDisplay } from '~/utils/key-display'
 // import LastEditedFileCard from '~/components/last-edited-file-card.vue'
 // import ManagedExplorer from '~/components/managed-explorer.vue'
 
@@ -94,12 +95,14 @@ useShortcut('new-file', startCreating)
                 @click="startCreating"
             >
                 New File
-                <KeyboardKey :keys="['Ctrl', 'N']" />
+                <KeyboardKey :keys="getKeyDisplay(shortcuts['new-file'])" />
             </HomeButton>
 
             <HomeButton @click="isShortcutsOpen = true">
                 Show Shortcuts
-                <KeyboardKey :keys="['F1']" />
+                <KeyboardKey
+                    :keys="getKeyDisplay(shortcuts['show-shortcuts'])"
+                />
             </HomeButton>
         </main>
     </div>

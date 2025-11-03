@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { shortcuts } from '~/composables/use-shortcuts'
-import type { ShortcutOptions } from '~/composables/use-shortcuts'
 import KeyboardKey from './keyboard-key.vue'
+import { getKeyDisplay } from '~/utils/key-display'
 
 const isOpen = defineModel<boolean>('open', { default: false })
 
@@ -17,24 +17,6 @@ watch(isOpen, (open) => {
 
 function handleClose() {
     isOpen.value = false
-}
-
-function getKeyDisplay(shortcut: ShortcutOptions): string[] {
-    const keys: string[] = []
-    const isMac = navigator.userAgent.toLowerCase().includes('mac')
-
-    if (shortcut.ctrl) {
-        keys.push(isMac ? '⌘' : 'Ctrl')
-    }
-    if (shortcut.alt) {
-        keys.push('Alt')
-    }
-    if (shortcut.shift) {
-        keys.push('Shift')
-    }
-    keys.push(shortcut.key)
-
-    return keys
 }
 </script>
 
@@ -58,8 +40,8 @@ function getKeyDisplay(shortcut: ShortcutOptions): string[] {
 
             <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
                 <div
-                    v-for="(shortcut, index) in shortcuts"
-                    :key="index"
+                    v-for="[action, shortcut] in Object.entries(shortcuts)"
+                    :key="action"
                     class="flex items-center justify-between gap-4 px-5 py-4"
                 >
                     <span class="text-sm text-zinc-600 dark:text-zinc-400">

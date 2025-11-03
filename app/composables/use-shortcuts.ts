@@ -1,5 +1,4 @@
 export interface ShortcutOptions {
-    action: string
     description: string
     key: string
     ctrl?: boolean // Automatically uses Cmd on Mac, Ctrl on Windows/Linux
@@ -7,30 +6,29 @@ export interface ShortcutOptions {
     shift?: boolean
 }
 
-export const shortcuts: ShortcutOptions[] = [
-    {
-        action: 'show-shortcuts',
+type ShortcutAction = 'show-shortcuts' | 'open-explorer' | 'new-file'
+export const shortcuts: Record<ShortcutAction, ShortcutOptions> = {
+    'show-shortcuts': {
         description: 'Show keyboard shortcuts',
         key: 'F1',
     },
-    {
-        action: 'open-explorer',
+    'open-explorer': {
         description: 'Open file explorer',
         key: 'k',
         ctrl: true,
     },
-    {
-        action: 'new-file',
+    'new-file': {
         description: 'Create a new file',
         key: 'm',
         ctrl: true,
     },
-]
+}
+
 export function useShortcut(
-    action: ShortcutOptions['action'],
+    action: keyof typeof shortcuts,
     callback: () => void,
 ) {
-    const options = shortcuts.find((s) => s.action === action)
+    const options = shortcuts[action]
     if (!options) throw new Error(`Shortcut not found: ${action}`)
 
     const isMac = navigator.userAgent.toLowerCase().includes('mac')
