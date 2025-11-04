@@ -7,7 +7,6 @@ import type {
 import ExplorerButton from './explorer-button.vue'
 import FileContextMenu from './file-context-menu.vue'
 import RenameDialog from './rename-dialog.vue'
-import { logger } from '~/utils/logger'
 
 interface FileExplorerProps {
     folder: FolderResponse
@@ -17,6 +16,7 @@ const props = defineProps<FileExplorerProps>()
 const emit = defineEmits<{
     folderClick: [path: string]
     fileClick: [path: string]
+    refresh: []
 }>()
 
 const sortedDirectories = computed(() =>
@@ -116,21 +116,33 @@ function handleRename() {
     renameDialogOpen.value = true
 }
 
-function handleDelete() {
+async function handleDelete() {
     if (!selectedItem.value || !selectedItemType.value) return
 
-    logger.log(`Delete ${selectedItemType.value}:`, selectedItem.value.path)
+    const endpoint =
+        selectedItemType.value === 'file' ?
+            `/api/files/${selectedItem.value.path}`
+        :   `/api/folders/${selectedItem.value.path}`
+
+    await $fetch(endpoint, { method: 'DELETE' })
+
+    emit('refresh')
 }
 
-function confirmRename(newName: string) {
+async function confirmRename(newName: string) {
     if (!selectedItem.value || !selectedItemType.value) return
 
-    logger.log(
-        `Rename ${selectedItemType.value}:`,
-        selectedItem.value.path,
-        '->',
-        newName,
-    )
+    const endpoint =
+        selectedItemType.value === 'file' ?
+            `/api/files/${selectedItem.value.path}`
+        :   `/api/folders/${selectedItem.value.path}`
+
+    await $fetch(endpoint, {
+        method: 'PATCH',
+        body: { newName },
+    })
+
+    emit('refresh')
 }
 </script>
 

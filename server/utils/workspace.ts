@@ -1,7 +1,13 @@
 import { constants } from 'node:fs'
 import { access, mkdir, readdir } from 'node:fs/promises'
 import path from 'node:path'
+import type { H3Event } from 'h3'
 import type { FileMetadata, FolderMetadata } from '~~/shared/types/api'
+
+export function decodeRouterParam(event: H3Event, name: string): string {
+    const param = getRouterParam(event, name) ?? ''
+    return decodeURIComponent(param)
+}
 
 export function getWorkspacePath(): string {
     const { workspacePath } = useRuntimeConfig()
@@ -46,7 +52,10 @@ export function resolvePath(relativePath: string): string {
 }
 
 export function resolveFilePath(relativePath: string): string {
-    const absolutePath = resolvePath(relativePath)
+    const pathWithExtension =
+        relativePath.endsWith('.md') ? relativePath : `${relativePath}.md`
+
+    const absolutePath = resolvePath(pathWithExtension)
 
     if (!isMarkdownFile(absolutePath)) {
         throw createError({
@@ -67,10 +76,12 @@ export function getFileMetadata(
     relativePath: string,
 ): FileMetadata {
     const filename = path.basename(absolutePath)
+    const nameWithoutExtension = filename.replace(/\.md$/iu, '')
+    const pathWithoutExtension = relativePath.replace(/\.md$/iu, '')
 
     return {
-        name: filename,
-        path: relativePath,
+        name: nameWithoutExtension,
+        path: pathWithoutExtension,
     }
 }
 
@@ -150,4 +161,25 @@ export async function listAllFilesRecursive(
     }
 
     return allFiles
+}
+
+export async function validateNewPath(newAbsolutePath: string): Promise<void> {
+    if (!isWithinWorkspace(newAbsolutePath)) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'Path must be within workspace',
+        })
+    }
+
+    try {
+        await access(newAbsolutePath)
+        throw createError({
+            statusCode: 409,
+            statusMessage: 'A file or folder with this name already exists',
+        })
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+            throw error
+        }
+    }
 }

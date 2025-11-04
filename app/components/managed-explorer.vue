@@ -4,7 +4,7 @@ import type { FolderResponse } from '~~/shared/types/api'
 
 const currentFolderPath = defineModel<string>('folder-path', { default: '' })
 
-const { data: folder } = await useFetch<FolderResponse>(
+const { data: folder, refresh } = await useFetch<FolderResponse>(
     () => `/api/folders/${currentFolderPath.value}`,
     {
         lazy: true,
@@ -18,6 +18,10 @@ function handleFolderClick(path: string) {
 function handleFileClick(path: string) {
     navigateTo(`/edit/${path}`)
 }
+
+function handleRefresh() {
+    refresh()
+}
 </script>
 
 <template>
@@ -26,6 +30,7 @@ function handleFileClick(path: string) {
         :folder="folder"
         @folder-click="handleFolderClick"
         @file-click="handleFileClick"
+        @refresh="handleRefresh"
     />
     <div
         v-else
