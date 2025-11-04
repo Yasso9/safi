@@ -3,7 +3,7 @@ import InputValidation from '~/components/input-validation.vue'
 
 interface Props {
     currentName: string
-    itemType: 'file' | 'folder'
+    itemType: 'document' | 'folder'
 }
 
 const open = defineModel<boolean>('open', { default: false })
@@ -44,7 +44,7 @@ function handleConfirm() {
     }
 
     const finalName =
-        props.itemType === 'file' ? `${trimmedName}.md` : trimmedName
+        props.itemType === 'document' ? `${trimmedName}.md` : trimmedName
     emit('confirm', finalName)
     handleClose()
 }

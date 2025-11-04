@@ -8,6 +8,7 @@ import ExplorerItem from './explorer-item.vue'
 import FileContextMenu from './file-context-menu.vue'
 import RenameDialog from './rename-dialog.vue'
 import CreateItemDialog from './create-item-dialog.vue'
+import { navigateToEdit } from '~/utils/navigate-to-edit'
 
 interface FileExplorerProps {
     folder: FolderResponse
@@ -18,7 +19,6 @@ const emit = defineEmits<{
     folderClick: [path: string]
     fileClick: [path: string]
     refresh: []
-    createItem: [type: 'file' | 'folder', name: string]
 }>()
 
 const sortedDirectories = computed(() =>
@@ -65,13 +65,13 @@ function handleKeyDown(event: KeyboardEvent) {
 }
 
 const selectedItem = ref<FileMetadata | FolderMetadata | undefined>(undefined)
-const selectedItemType = ref<'file' | 'folder' | undefined>(undefined)
+const selectedItemType = ref<'document' | 'folder' | undefined>(undefined)
 const contextMenuOpen = ref(false)
 const contextMenuX = ref(0)
 const contextMenuY = ref(0)
 const renameDialogOpen = ref(false)
 const createDialogOpen = ref(false)
-const createItemType = ref<'file' | 'folder' | undefined>(undefined)
+const createItemType = ref<'document' | 'folder' | undefined>(undefined)
 
 let touchTimer: NodeJS.Timeout | undefined
 let touchStartX = 0
@@ -80,7 +80,7 @@ let touchStartY = 0
 function handleContextMenu(
     event: MouseEvent,
     item: FileMetadata | FolderMetadata,
-    type: 'file' | 'folder',
+    type: 'document' | 'folder',
 ) {
     event.preventDefault()
     selectedItem.value = item
@@ -95,7 +95,7 @@ const TOUCH_THRESHOLD = 500
 function handleTouchStart(
     event: TouchEvent,
     item: FileMetadata | FolderMetadata,
-    type: 'file' | 'folder',
+    type: 'document' | 'folder',
 ) {
     const [touch] = event.touches
     if (!touch) return
@@ -143,7 +143,7 @@ async function handleDelete() {
     if (!selectedItem.value || !selectedItemType.value) return
 
     const endpoint =
-        selectedItemType.value === 'file' ?
+        selectedItemType.value === 'document' ?
             `/api/files/${selectedItem.value.path}`
         :   `/api/folders/${selectedItem.value.path}`
 
@@ -156,7 +156,7 @@ async function confirmRename(newName: string) {
     if (!selectedItem.value || !selectedItemType.value) return
 
     const endpoint =
-        selectedItemType.value === 'file' ?
+        selectedItemType.value === 'document' ?
             `/api/files/${selectedItem.value.path}`
         :   `/api/folders/${selectedItem.value.path}`
 
@@ -169,7 +169,7 @@ async function confirmRename(newName: string) {
 }
 
 function handleCreateFile() {
-    createItemType.value = 'file'
+    createItemType.value = 'document'
     createDialogOpen.value = true
 }
 
@@ -178,9 +178,20 @@ function handleCreateFolder() {
     createDialogOpen.value = true
 }
 
-function confirmCreate(name: string) {
+async function confirmCreate(name: string) {
     if (!createItemType.value) return
-    emit('createItem', createItemType.value, name)
+
+    const { currentPath } = props.folder
+    const newPath = currentPath ? `${currentPath}/${name}` : name
+
+    const endpoint =
+        createItemType.value === 'document' ?
+            `/api/files/${newPath}`
+        :   `/api/folders/${newPath}`
+
+    await $fetch(endpoint, { method: 'POST' })
+
+    navigateToEdit(newPath)
 }
 </script>
 
@@ -220,8 +231,8 @@ function confirmCreate(name: string) {
             icon="📄"
             @dblclick="emit('fileClick', file.path)"
             @keydown.enter.prevent="emit('fileClick', file.path)"
-            @contextmenu="handleContextMenu($event, file, 'file')"
-            @touchstart="handleTouchStart($event, file, 'file')"
+            @contextmenu="handleContextMenu($event, file, 'document')"
+            @touchstart="handleTouchStart($event, file, 'document')"
             @touchmove="handleTouchMove"
             @touchend="handleTouchEnd"
             @touchcancel="handleTouchEnd"
@@ -235,7 +246,7 @@ function confirmCreate(name: string) {
             @keydown.enter.prevent="handleCreateFile"
             @keydown="handleKeyDown"
         >
-            create new file
+            create new document
         </ExplorerItem>
 
         <ExplorerItem
@@ -256,10 +267,10 @@ function confirmCreate(name: string) {
     />
 
     <RenameDialog
-        v-if="selectedItem"
+        v-if="selectedItem && selectedItemType"
         v-model:open="renameDialogOpen"
         :current-name="selectedItem.name"
-        :item-type="selectedItemType!"
+        :item-type="selectedItemType"
         @confirm="confirmRename"
     />
 

@@ -2,7 +2,7 @@
 import InputValidation from '~/components/input-validation.vue'
 
 interface Props {
-    itemType: 'file' | 'folder'
+    itemType: 'document' | 'folder'
 }
 
 const open = defineModel<boolean>('open', { default: false })
@@ -43,7 +43,7 @@ function handleConfirm() {
     }
 
     const finalName =
-        props.itemType === 'file' ? `${trimmedName}.md` : trimmedName
+        props.itemType === 'document' ? `${trimmedName}.md` : trimmedName
     emit('confirm', finalName)
     handleClose()
 }
@@ -62,7 +62,7 @@ function handleCancel() {
     >
         <div class="flex flex-col gap-4 font-mono">
             <h2 class="text-lg font-medium text-zinc-900 dark:text-zinc-100">
-                Create {{ itemType }}
+                Create {{ props.itemType }}
             </h2>
             <InputValidation
                 ref="inputRef"
