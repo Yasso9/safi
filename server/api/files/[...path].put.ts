@@ -2,12 +2,13 @@ import { writeFile } from 'node:fs/promises'
 import {
     ensureDirectoryExists,
     resolveFilePath,
+    decodeRouterParam,
 } from '~~/server/utils/workspace'
 import type { FileRequest } from '~~/shared/types/api'
 
 export default defineEventHandler(async (event) => {
     try {
-        const path = getRouterParam(event, 'path')
+        const path = decodeRouterParam(event, 'path')
 
         if (!path) {
             throw createError({

@@ -1,29 +1,41 @@
 import type { FileResponse, FolderResponse } from '~~/shared/types/api'
 import { readFile, stat } from 'node:fs/promises'
-import { resolvePath } from '~~/server/utils/workspace'
+import {
+    decodeRouterParam,
+    resolveFilePath,
+    resolvePath,
+} from '~~/server/utils/workspace'
 
 export default defineEventHandler(
     async (event): Promise<FileResponse | FolderResponse> => {
-        const relativePath = getRouterParam(event, 'path') ?? ''
-        const absolutePath = resolvePath(relativePath)
-        const stats = await stat(absolutePath)
+        const relativePath = decodeRouterParam(event, 'path')
 
-        if (stats.isDirectory()) {
-            return await $fetch(`/api/folders/${relativePath}`)
-        }
+        try {
+            const fileAbsolutePath = resolveFilePath(relativePath)
+            const stats = await stat(fileAbsolutePath)
 
-        if (stats.isFile()) {
-            const content = await readFile(absolutePath, 'utf8')
-            return {
-                type: 'file',
-                content,
-                path: relativePath,
+            if (stats.isFile()) {
+                const content = await readFile(fileAbsolutePath, 'utf8')
+                return {
+                    type: 'file',
+                    content,
+                    path: relativePath,
+                }
             }
-        }
+        } catch {}
+
+        try {
+            const folderAbsolutePath = resolvePath(relativePath)
+            const stats = await stat(folderAbsolutePath)
+
+            if (stats.isDirectory()) {
+                return await $fetch(`/api/folders/${relativePath}`)
+            }
+        } catch {}
 
         throw createError({
-            statusCode: 400,
-            message: 'Path is neither a file nor a directory',
+            statusCode: 404,
+            statusMessage: 'Path not found',
         })
     },
 )
