@@ -114,3 +114,40 @@ export async function listDirectory(
 
     return { files, directories }
 }
+
+export async function listAllFilesRecursive(
+    relativePath = '',
+): Promise<FileMetadata[]> {
+    const absolutePath = resolvePath(relativePath)
+    const workspacePath = getWorkspacePath()
+    const allFiles: FileMetadata[] = []
+
+    try {
+        await access(absolutePath, constants.R_OK)
+    } catch {
+        await mkdir(absolutePath, { recursive: true })
+    }
+
+    const entries = await readdir(absolutePath, { withFileTypes: true })
+
+    for (const entry of entries) {
+        if (isHiddenFile(entry.name)) {
+            continue
+        }
+
+        const entryAbsolutePath = path.join(absolutePath, entry.name)
+        const entryRelativePath = path.relative(
+            workspacePath,
+            entryAbsolutePath,
+        )
+
+        if (entry.isDirectory()) {
+            const subFiles = await listAllFilesRecursive(entryRelativePath)
+            allFiles.push(...subFiles)
+        } else if (entry.isFile() && isMarkdownFile(entry.name)) {
+            allFiles.push(getFileMetadata(entryAbsolutePath, entryRelativePath))
+        }
+    }
+
+    return allFiles
+}
