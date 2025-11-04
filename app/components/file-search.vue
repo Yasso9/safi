@@ -2,6 +2,7 @@
 import type { FileMetadata } from '~~/shared/types/api'
 
 const searchQuery = ref('')
+const searchInputRef = useTemplateRef('searchInputRef')
 
 const { data: files, status } = await useFetch<FileMetadata[]>('/api/files')
 
@@ -15,6 +16,43 @@ const filteredFiles = computed(() => {
 
 const isLoading = computed(() => status.value === 'pending')
 const isEmpty = computed(() => filteredFiles.value.length === 0)
+
+function handleSearchKeyDown(event: KeyboardEvent) {
+    const links = document.querySelectorAll<HTMLElement>('[data-result-link]')
+
+    if (event.key === 'ArrowDown' && links.length > 0) {
+        event.preventDefault()
+        links[0]?.focus()
+    } else if (event.key === 'Enter' && links.length > 0) {
+        event.preventDefault()
+        links[0]?.click()
+    }
+}
+
+function handleResultKeyDown(event: KeyboardEvent) {
+    const links = [
+        ...document.querySelectorAll<HTMLElement>('[data-result-link]'),
+    ]
+    const currentIndex = links.indexOf(event.target as HTMLElement)
+
+    switch (event.key) {
+        case 'ArrowDown': {
+            event.preventDefault()
+            const nextIndex = (currentIndex + 1) % links.length
+            links[nextIndex]?.focus()
+            break
+        }
+
+        case 'ArrowUp':
+            event.preventDefault()
+            if (currentIndex === 0) {
+                searchInputRef.value?.focus()
+            } else {
+                links[currentIndex - 1]?.focus()
+            }
+            break
+    }
+}
 </script>
 
 <template>
@@ -28,10 +66,12 @@ const isEmpty = computed(() => filteredFiles.value.length === 0)
             </label>
             <input
                 id="file-search"
+                ref="searchInputRef"
                 v-model="searchQuery"
-                type="text"
+                type="search"
                 placeholder="Search files..."
                 class="h-10 w-full rounded-sm border border-zinc-200 bg-white px-4 text-sm text-zinc-700 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
+                @keydown="handleSearchKeyDown"
             />
         </div>
 
@@ -57,8 +97,10 @@ const isEmpty = computed(() => filteredFiles.value.length === 0)
                 <NuxtLink
                     v-for="file in filteredFiles"
                     :key="file.path"
+                    :data-result-link="true"
                     :to="`/edit/${file.path}`"
-                    class="flex w-full flex-col gap-1 px-5 py-3 transition-colors hover:bg-zinc-50 active:bg-zinc-100 dark:hover:bg-zinc-900 dark:active:bg-zinc-800"
+                    class="flex w-full flex-col gap-1 px-5 py-3 transition-colors hover:bg-zinc-50 focus:inset-ring-2 focus:outline-none active:bg-zinc-100 dark:inset-ring-zinc-200 dark:hover:bg-zinc-800 dark:active:bg-zinc-700"
+                    @keydown="handleResultKeyDown"
                 >
                     <span class="text-zinc-900 dark:text-zinc-100">
                         {{ file.name }}
