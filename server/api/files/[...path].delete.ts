@@ -1,5 +1,5 @@
 import { unlink } from 'node:fs/promises'
-import { resolveFilePath, isWithinWorkspace, decodeRouterParam } from '~~/server/utils/workspace'
+import { decodeRouterParam, isWithinWorkspace, resolveFilePath } from '~~/server/utils/workspace'
 
 export default defineEventHandler(async (event) => {
     try {

@@ -1,4 +1,4 @@
-import { listDirectory, decodeRouterParam } from '~~/server/utils/workspace'
+import { decodeRouterParam, listDirectory } from '~~/server/utils/workspace'
 import type { FolderResponse } from '~~/shared/types/api'
 
 export default defineEventHandler(async (event): Promise<FolderResponse> => {

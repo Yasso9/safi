@@ -1,11 +1,11 @@
 import { rename } from 'node:fs/promises'
 import path from 'node:path'
 import {
-    resolveFilePath,
-    isWithinWorkspace,
-    validateNewPath,
-    getWorkspacePath,
     decodeRouterParam,
+    getWorkspacePath,
+    isWithinWorkspace,
+    resolveFilePath,
+    validateNewPath,
 } from '~~/server/utils/workspace'
 
 export default defineEventHandler(async (event) => {
