@@ -82,6 +82,21 @@ async function handleDelete() {
     emit('refresh')
 }
 
+function handleCopy() {
+    if (!selectedItem.value || !selectedItemType.value) return
+    console.log('Copy:', selectedItemType.value, selectedItem.value)
+}
+
+function handleCut() {
+    if (!selectedItem.value || !selectedItemType.value) return
+    console.log('Cut:', selectedItemType.value, selectedItem.value)
+}
+
+function handlePaste() {
+    if (!selectedItem.value || !selectedItemType.value) return
+    console.log('Paste:', selectedItemType.value, selectedItem.value)
+}
+
 async function confirmRename(newName: string) {
     if (!selectedItem.value || !selectedItemType.value) return
 
@@ -186,6 +201,9 @@ async function confirmCreate(name: string) {
         v-model:open="contextMenuOpen"
         :x="contextMenuX"
         :y="contextMenuY"
+        @copy="handleCopy"
+        @cut="handleCut"
+        @paste="handlePaste"
         @rename="handleRename"
         @delete="handleDelete"
     />

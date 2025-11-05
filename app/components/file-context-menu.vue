@@ -11,6 +11,9 @@ const open = defineModel<boolean>('open', { default: false })
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
+    copy: []
+    cut: []
+    paste: []
     rename: []
     delete: []
     close: []
@@ -40,6 +43,21 @@ function handleBackdropClick(event: MouseEvent) {
     if (canClose.value && event.target === dialogEl.value) {
         handleClose()
     }
+}
+
+function handleCopy() {
+    emit('copy')
+    handleClose()
+}
+
+function handleCut() {
+    emit('cut')
+    handleClose()
+}
+
+function handlePaste() {
+    emit('paste')
+    handleClose()
 }
 
 function handleRename() {
@@ -74,6 +92,27 @@ const menuStyle = computed<CSSProperties>(() => {
         @click="handleBackdropClick"
     >
         <div class="flex min-w-[200px] flex-col font-mono text-sm">
+            <button
+                type="button"
+                class="px-5 py-2 text-left transition-colors hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-800 dark:active:bg-zinc-700"
+                @click="handleCopy"
+            >
+                Copy
+            </button>
+            <button
+                type="button"
+                class="px-5 py-2 text-left transition-colors hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-800 dark:active:bg-zinc-700"
+                @click="handleCut"
+            >
+                Cut
+            </button>
+            <button
+                type="button"
+                class="px-5 py-2 text-left transition-colors hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-800 dark:active:bg-zinc-700"
+                @click="handlePaste"
+            >
+                Paste
+            </button>
             <button
                 type="button"
                 class="px-5 py-2 text-left transition-colors hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-800 dark:active:bg-zinc-700"
