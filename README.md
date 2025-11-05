@@ -1,6 +1,6 @@
 # Safi
 
-A minimalist, distraction-free text editor for markdown files. Safi provides a clean, mobile-friendly interface focused on your content.
+A minimalist, self-hosted text editor for markdown files with a clean, mobile-friendly interface and file-based storage.
 
 ## Features
 
