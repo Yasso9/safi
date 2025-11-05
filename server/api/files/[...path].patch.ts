@@ -38,9 +38,8 @@ export default defineEventHandler(async (event) => {
         }
 
         const newName = body.newName.trim()
-        const newNameWithExtension = newName.endsWith('.md')
-            ? newName
-            : `${newName}.md`
+        const newNameWithExtension =
+            newName.endsWith('.md') ? newName : `${newName}.md`
 
         const directory = path.dirname(oldAbsolutePath)
         const newAbsolutePath = path.join(directory, newNameWithExtension)

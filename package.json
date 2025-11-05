@@ -1,8 +1,9 @@
 {
     "name": "safi",
-    "description": "A minimalist, self hosted text editor for markdown files. Safi provides a clean, mobile-friendly interface focused on your content.",
     "type": "module",
+    "version": "0.0.1",
     "private": true,
+    "description": "A minimalist, self hosted text editor for markdown files. Safi provides a clean, mobile-friendly interface focused on your content.",
     "license": "MIT",
     "scripts": {
         "prepare": "nuxt prepare",
@@ -51,6 +52,5 @@
         "prettier-plugin-tailwindcss": "^0.7.1",
         "typescript": "^5.9.3",
         "vue-tsc": "^3.1.1"
-    },
-    "version": "0.0.1"
+    }
 }

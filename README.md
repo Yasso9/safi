@@ -34,16 +34,17 @@ Create a `docker-compose.yml` file:
 version: '3.8'
 
 services:
-  safi:
-    image: ghcr.io/yasso9/safi:latest
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./workspace:/app/workspace
-    restart: unless-stopped
+    safi:
+        image: ghcr.io/yasso9/safi:latest
+        ports:
+            - '3000:3000'
+        volumes:
+            - ./workspace:/app/workspace
+        restart: unless-stopped
 ```
 
 Then run:
+
 ```bash
 docker-compose up -d
 ```
@@ -53,12 +54,14 @@ docker-compose up -d
 If you prefer to build the image yourself:
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/Yasso9/safi.git
 cd safi
 ```
 
 2. Build and run:
+
 ```bash
 docker build -t safi .
 docker run -d \
@@ -74,7 +77,7 @@ Edit `docker-compose.yml` and change the volume mount:
 
 ```yaml
 volumes:
-  - /your/custom/path:/app/workspace
+    - /your/custom/path:/app/workspace
 ```
 
 Or for `docker run`:
@@ -98,27 +101,32 @@ docker run -d \
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd safi
 ```
 
 2. Install dependencies:
+
 ```bash
 bun install
 ```
 
 3. Create a `.env` file:
+
 ```bash
 cp .env.example .env
 ```
 
 4. Configure your workspace path in `.env`:
+
 ```env
 NUXT_WORKSPACE_PATH=/path/to/your/markdown/files
 ```
 
 5. Start the development server:
+
 ```bash
 bun run dev
 ```
@@ -206,6 +214,7 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 ## Acknowledgments
 
 Built with:
+
 - [Nuxt 4](https://nuxt.com/)
 - [Vue 3](https://vuejs.org/)
 - [CodeMirror 6](https://codemirror.net/)

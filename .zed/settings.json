@@ -3,6 +3,9 @@
     "languages": {
         "CSS": {
             "language_servers": ["tailwindcss-language-server"]
+        },
+        "JSON": {
+            "language_servers": ["eslint"]
         }
     },
     "lsp": {

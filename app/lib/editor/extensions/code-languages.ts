@@ -22,7 +22,8 @@ export const codeLanguages = [
     }),
     LanguageDescription.of({
         name: 'tsx',
-        load: () => Promise.resolve(javascript({ jsx: true, typescript: true })),
+        load: () =>
+            Promise.resolve(javascript({ jsx: true, typescript: true })),
     }),
     LanguageDescription.of({
         name: 'css',

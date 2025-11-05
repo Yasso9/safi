@@ -17,7 +17,7 @@ export function getFilter(
     context: MarkerContext,
     markerConfig: MarkerConfig,
 ): boolean {
-    const {filterMode} = markerConfig
+    const { filterMode } = markerConfig
     switch (filterMode) {
         case 'line':
             return lineFilter(context)
@@ -64,7 +64,7 @@ function findPair(
 ): { start: number; end: number } | undefined {
     const { view, markerFrom } = context
     const tree = syntaxTree(view.state)
-    const {doc} = view.state
+    const { doc } = view.state
 
     let result: { start: number; end: number } | undefined
 
