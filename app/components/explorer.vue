@@ -9,6 +9,9 @@ import FileContextMenu from './file-context-menu.vue'
 import RenameDialog from './rename-dialog.vue'
 import CreateItemDialog from './create-item-dialog.vue'
 import { navigateToEdit } from '~/utils/navigate-to-edit'
+import { useContextMenu } from '~/composables/use-context-menu'
+import { useKeyboardListNavigation } from '~/composables/use-keyboard-list-navigation'
+import { useFileSystemCrud } from '~/composables/use-file-system-crud'
 
 interface FileExplorerProps {
     folder: FolderResponse
@@ -38,102 +41,32 @@ const parentPath = computed(() => {
 
 const listContainerRef = useTemplateRef('listContainer')
 
-function handleKeyDown(event: KeyboardEvent) {
-    if (!listContainerRef.value) return
+const { handleKeyDown } = useKeyboardListNavigation(listContainerRef)
 
-    const items = [
-        ...listContainerRef.value.querySelectorAll<HTMLElement>(
-            '[tabindex="0"]',
-        ),
-    ]
-    if (items.length === 0) return
+const {
+    isOpen: contextMenuOpen,
+    x: contextMenuX,
+    y: contextMenuY,
+    selectedItem,
+    selectedItemType,
+    handleContextMenu,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+} = useContextMenu<FileMetadata | FolderMetadata, 'document' | 'folder'>()
 
-    const { activeElement } = document
-    const currentIndex =
-        activeElement ? items.indexOf(activeElement as HTMLElement) : -1
+const {
+    createFile,
+    createFolder,
+    renameFile,
+    renameFolder,
+    deleteFile,
+    deleteFolder,
+} = useFileSystemCrud()
 
-    if (event.key === 'ArrowDown') {
-        event.preventDefault()
-        const nextIndex = (currentIndex + 1) % items.length
-        items[nextIndex]?.focus()
-    } else if (event.key === 'ArrowUp') {
-        event.preventDefault()
-        const prevIndex =
-            currentIndex <= 0 ? items.length - 1 : currentIndex - 1
-        items[prevIndex]?.focus()
-    }
-}
-
-const selectedItem = ref<FileMetadata | FolderMetadata | undefined>(undefined)
-const selectedItemType = ref<'document' | 'folder' | undefined>(undefined)
-const contextMenuOpen = ref(false)
-const contextMenuX = ref(0)
-const contextMenuY = ref(0)
 const renameDialogOpen = ref(false)
 const createDialogOpen = ref(false)
 const createItemType = ref<'document' | 'folder' | undefined>(undefined)
-
-let touchTimer: NodeJS.Timeout | undefined
-let touchStartX = 0
-let touchStartY = 0
-
-function handleContextMenu(
-    event: MouseEvent,
-    item: FileMetadata | FolderMetadata,
-    type: 'document' | 'folder',
-) {
-    event.preventDefault()
-    selectedItem.value = item
-    selectedItemType.value = type
-    contextMenuX.value = event.clientX
-    contextMenuY.value = event.clientY
-    contextMenuOpen.value = true
-}
-
-const TOUCH_THRESHOLD = 500
-
-function handleTouchStart(
-    event: TouchEvent,
-    item: FileMetadata | FolderMetadata,
-    type: 'document' | 'folder',
-) {
-    const [touch] = event.touches
-    if (!touch) return
-
-    touchStartX = touch.clientX
-    touchStartY = touch.clientY
-
-    touchTimer = setTimeout(() => {
-        selectedItem.value = item
-        selectedItemType.value = type
-        contextMenuX.value = touch.clientX
-        contextMenuY.value = touch.clientY
-        contextMenuOpen.value = true
-        touchTimer = undefined
-    }, TOUCH_THRESHOLD)
-}
-
-function handleTouchMove(event: TouchEvent) {
-    if (!touchTimer) return
-
-    const [touch] = event.touches
-    if (!touch) return
-
-    const deltaX = Math.abs(touch.clientX - touchStartX)
-    const deltaY = Math.abs(touch.clientY - touchStartY)
-
-    if (deltaX > 10 || deltaY > 10) {
-        clearTimeout(touchTimer)
-        touchTimer = undefined
-    }
-}
-
-function handleTouchEnd() {
-    if (touchTimer) {
-        clearTimeout(touchTimer)
-        touchTimer = undefined
-    }
-}
 
 function handleRename() {
     renameDialogOpen.value = true
@@ -142,12 +75,9 @@ function handleRename() {
 async function handleDelete() {
     if (!selectedItem.value || !selectedItemType.value) return
 
-    const endpoint =
-        selectedItemType.value === 'document' ?
-            `/api/files/${selectedItem.value.path}`
-        :   `/api/folders/${selectedItem.value.path}`
-
-    await $fetch(endpoint, { method: 'DELETE' })
+    await (selectedItemType.value === 'document' ?
+        deleteFile(selectedItem.value.path)
+    :   deleteFolder(selectedItem.value.path))
 
     emit('refresh')
 }
@@ -155,15 +85,9 @@ async function handleDelete() {
 async function confirmRename(newName: string) {
     if (!selectedItem.value || !selectedItemType.value) return
 
-    const endpoint =
-        selectedItemType.value === 'document' ?
-            `/api/files/${selectedItem.value.path}`
-        :   `/api/folders/${selectedItem.value.path}`
-
-    await $fetch(endpoint, {
-        method: 'PATCH',
-        body: { newName },
-    })
+    await (selectedItemType.value === 'document' ?
+        renameFile(selectedItem.value.path, newName)
+    :   renameFolder(selectedItem.value.path, newName))
 
     emit('refresh')
 }
@@ -184,12 +108,9 @@ async function confirmCreate(name: string) {
     const { currentPath } = props.folder
     const newPath = currentPath ? `${currentPath}/${name}` : name
 
-    const endpoint =
-        createItemType.value === 'document' ?
-            `/api/files/${newPath}`
-        :   `/api/folders/${newPath}`
-
-    await $fetch(endpoint, { method: 'POST' })
+    await (createItemType.value === 'document' ?
+        createFile(newPath)
+    :   createFolder(newPath))
 
     navigateToEdit(newPath)
 }
@@ -202,6 +123,7 @@ async function confirmCreate(name: string) {
     >
         <ExplorerItem
             v-if="parentPath !== undefined"
+            icon="lucide:folder-up"
             @dblclick="emit('folderClick', parentPath)"
             @keydown.enter.prevent="emit('folderClick', parentPath)"
             @keydown="handleKeyDown"
@@ -212,7 +134,7 @@ async function confirmCreate(name: string) {
         <ExplorerItem
             v-for="directory in sortedDirectories"
             :key="directory.path"
-            icon="📁"
+            icon="lucide:folder"
             @dblclick="emit('folderClick', directory.path)"
             @keydown.enter.prevent="emit('folderClick', directory.path)"
             @contextmenu="handleContextMenu($event, directory, 'folder')"
@@ -228,7 +150,7 @@ async function confirmCreate(name: string) {
         <ExplorerItem
             v-for="file in sortedFiles"
             :key="file.path"
-            icon="📄"
+            icon="lucide:file-text"
             @dblclick="emit('fileClick', file.path)"
             @keydown.enter.prevent="emit('fileClick', file.path)"
             @contextmenu="handleContextMenu($event, file, 'document')"
@@ -242,6 +164,7 @@ async function confirmCreate(name: string) {
         </ExplorerItem>
 
         <ExplorerItem
+            icon="lucide:file-plus"
             @dblclick="handleCreateFile"
             @keydown.enter.prevent="handleCreateFile"
             @keydown="handleKeyDown"
@@ -250,6 +173,7 @@ async function confirmCreate(name: string) {
         </ExplorerItem>
 
         <ExplorerItem
+            icon="lucide:folder-plus"
             @dblclick="handleCreateFolder"
             @keydown.enter.prevent="handleCreateFolder"
             @keydown="handleKeyDown"

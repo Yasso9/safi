@@ -6,13 +6,9 @@ import KeyboardKey from '~/components/keyboard-key.vue'
 import { shortcuts, useShortcut } from '~/composables/use-shortcuts'
 import { getKeyDisplay } from '~/utils/key-display'
 import { navigateToEdit } from '~/utils/navigate-to-edit'
-// import LastEditedFileCard from '~/components/last-edited-file-card.vue'
-// import ManagedExplorer from '~/components/managed-explorer.vue'
+import { useFileSystemCrud } from '~/composables/use-file-system-crud'
 
-// const currentFolderPath = ref('')
-
-// const { data: workspace } = await useFetch('/api/workspace')
-// const workspacePath = computed(() => workspace.value?.path ?? '')
+const { createFile: createFileApi } = useFileSystemCrud()
 
 const isShortcutsOpen = useState('isShortcutsOpen', () => false)
 const isExplorerOpen = ref(false)
@@ -41,12 +37,7 @@ async function createFile() {
     }
 
     const fileName = `${trimmedName}.md` as const
-    await $fetch(`/api/files/${fileName}`, {
-        method: 'PUT',
-        body: {
-            content: '',
-        },
-    })
+    await createFileApi(fileName, '')
 
     cancelCreating()
 
