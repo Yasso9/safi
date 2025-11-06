@@ -12,6 +12,7 @@ import { navigateToEdit } from '~/utils/navigate-to-edit'
 import { useContextMenu } from '~/composables/use-context-menu'
 import { useKeyboardListNavigation } from '~/composables/use-keyboard-list-navigation'
 import { useFileSystemCrud } from '~/composables/use-file-system-crud'
+import { useClipboard } from '~/composables/use-clipboard'
 
 interface FileExplorerProps {
     folder: FolderResponse
@@ -62,7 +63,13 @@ const {
     renameFolder,
     deleteFile,
     deleteFolder,
+    copyFile,
+    copyFolder,
+    moveFile,
+    moveFolder,
 } = useFileSystemCrud()
+
+const { clipboard, copyToClipboard, cutToClipboard, clearClipboard } = useClipboard()
 
 const renameDialogOpen = ref(false)
 const createDialogOpen = ref(false)
@@ -84,17 +91,38 @@ async function handleDelete() {
 
 function handleCopy() {
     if (!selectedItem.value || !selectedItemType.value) return
-    console.log('Copy:', selectedItemType.value, selectedItem.value)
+    copyToClipboard(selectedItem.value, selectedItemType.value)
 }
 
 function handleCut() {
     if (!selectedItem.value || !selectedItemType.value) return
-    console.log('Cut:', selectedItemType.value, selectedItem.value)
+    cutToClipboard(selectedItem.value, selectedItemType.value)
 }
 
-function handlePaste() {
-    if (!selectedItem.value || !selectedItemType.value) return
-    console.log('Paste:', selectedItemType.value, selectedItem.value)
+async function handlePaste() {
+    if (!clipboard.value) return
+
+    const { item, itemType, operation } = clipboard.value
+    const { currentPath } = props.folder
+
+    const destinationPath = currentPath ? `${currentPath}/${item.name}` : item.name
+
+    try {
+        if (operation === 'copy') {
+            await (itemType === 'document' ?
+                copyFile(item.path, destinationPath)
+            :   copyFolder(item.path, destinationPath))
+        } else {
+            await (itemType === 'document' ?
+                moveFile(item.path, destinationPath)
+            :   moveFolder(item.path, destinationPath))
+            clearClipboard()
+        }
+
+        emit('refresh')
+    } catch (error) {
+        console.error('Error pasting:', error)
+    }
 }
 
 async function confirmRename(newName: string) {

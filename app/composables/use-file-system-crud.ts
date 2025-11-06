@@ -37,6 +37,38 @@ async function deleteFolder(path: string) {
     })
 }
 
+async function copyFile(sourcePath: string, destinationPath: string) {
+    const response = await $fetch('/api/files/copy', {
+        method: 'POST',
+        body: { sourcePath, destinationPath },
+    })
+    return response
+}
+
+async function copyFolder(sourcePath: string, destinationPath: string) {
+    const response = await $fetch('/api/folders/copy', {
+        method: 'POST',
+        body: { sourcePath, destinationPath },
+    })
+    return response
+}
+
+async function moveFile(sourcePath: string, destinationPath: string) {
+    const response = await $fetch('/api/files/move', {
+        method: 'POST',
+        body: { sourcePath, destinationPath },
+    })
+    return response
+}
+
+async function moveFolder(sourcePath: string, destinationPath: string) {
+    const response = await $fetch('/api/folders/move', {
+        method: 'POST',
+        body: { sourcePath, destinationPath },
+    })
+    return response
+}
+
 export function useFileSystemCrud() {
     return {
         createFile,
@@ -45,5 +77,9 @@ export function useFileSystemCrud() {
         renameFolder,
         deleteFile,
         deleteFolder,
+        copyFile,
+        copyFolder,
+        moveFile,
+        moveFolder,
     }
 }

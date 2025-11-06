@@ -10,5 +10,8 @@ export default ilyasso({
                 ignore: ['README.md', 'CLAUDE.md', 'AGENTS.md', 'GEMINI.md'],
             },
         ],
+
+        // Slow development, add when the app will be more complex
+        'no-await-in-loop': 'off',
     },
 })
