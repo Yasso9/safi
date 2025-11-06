@@ -4,20 +4,34 @@ import {
     isWithinWorkspace,
     resolvePath,
 } from '~~/server/utils/workspace'
-import { copyFolderRecursive, generateUniqueName } from '~~/server/utils/file-operations'
+import {
+    copyFolderRecursive,
+    generateUniqueName,
+} from '~~/server/utils/file-operations'
 
 export default defineEventHandler(async (event) => {
     try {
-        const body = await readBody<{ sourcePath: string; destinationPath: string }>(event)
+        const body = await readBody<{
+            sourcePath: string
+            destinationPath: string
+        }>(event)
 
-        if (!body || typeof body.sourcePath !== 'string' || !body.sourcePath.trim()) {
+        if (
+            !body
+            || typeof body.sourcePath !== 'string'
+            || !body.sourcePath.trim()
+        ) {
             throw createError({
                 statusCode: 400,
                 statusMessage: 'Source path is required',
             })
         }
 
-        if (!body || typeof body.destinationPath !== 'string' || !body.destinationPath.trim()) {
+        if (
+            !body
+            || typeof body.destinationPath !== 'string'
+            || !body.destinationPath.trim()
+        ) {
             throw createError({
                 statusCode: 400,
                 statusMessage: 'Destination path is required',
@@ -43,7 +57,10 @@ export default defineEventHandler(async (event) => {
 
         const destDir = path.dirname(destAbsolutePath)
         const destFolderName = path.basename(destAbsolutePath)
-        const uniqueDestFolderName = await generateUniqueName(destDir, destFolderName)
+        const uniqueDestFolderName = await generateUniqueName(
+            destDir,
+            destFolderName,
+        )
         const finalDestPath = path.join(destDir, uniqueDestFolderName)
 
         await copyFolderRecursive(sourceAbsolutePath, finalDestPath)

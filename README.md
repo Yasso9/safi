@@ -26,7 +26,6 @@ docker run -d \
   ghcr.io/yasso9/safi:latest
 ```
 
-
 ### Docker Compose
 
 ```yaml

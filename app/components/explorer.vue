@@ -69,7 +69,8 @@ const {
     moveFolder,
 } = useFileSystemCrud()
 
-const { clipboard, copyToClipboard, cutToClipboard, clearClipboard } = useClipboard()
+const { clipboard, copyToClipboard, cutToClipboard, clearClipboard } =
+    useClipboard()
 
 const renameDialogOpen = ref(false)
 const createDialogOpen = ref(false)
@@ -105,7 +106,8 @@ async function handlePaste() {
     const { item, itemType, operation } = clipboard.value
     const { currentPath } = props.folder
 
-    const destinationPath = currentPath ? `${currentPath}/${item.name}` : item.name
+    const destinationPath =
+        currentPath ? `${currentPath}/${item.name}` : item.name
 
     try {
         if (operation === 'copy') {
